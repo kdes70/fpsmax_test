@@ -14,15 +14,20 @@ class CreateLeaguesTable extends Migration
     public function up()
     {
         Schema::create('leagues', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary(); // id pandascore api
+            $table->unsignedBigInteger('id', false)->primary(); // id pandascore api
             $table->string('image_url', 200);
             $table->string('name', 200)->index();
             $table->string('slug', 200)->index();
-            $table->string('url')->index();
-            $table->boolean('live_supported');
-            $table->timestamp('modified_at');
+            $table->string('url')->nullable();
+            $table->boolean('live_supported')->index();
+            $table->timestampTz('modified_at');
             $table->timestamps();
-            $table->softDeletes();
+
+
+        });
+
+        Schema::table('matches', function (Blueprint $table) {
+            $table->foreign('league_id')->references('id')->on('leagues')->onDelete('cascade');
         });
     }
 
@@ -33,6 +38,10 @@ class CreateLeaguesTable extends Migration
      */
     public function down()
     {
+        Schema::table('matches', function(Blueprint $table){
+            $table->dropForeign('matches_league_id_foreign');
+        });
+
         Schema::dropIfExists('leagues');
     }
 }

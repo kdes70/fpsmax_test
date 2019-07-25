@@ -14,13 +14,14 @@ class CreateOpponentsTable extends Migration
     public function up()
     {
         Schema::create('opponents', function (Blueprint $table) {
-            $table->increments('id');
             $table->unsignedBigInteger('match_id');
             $table->unsignedBigInteger('team_id');
-            $table->morphs('opponents'); // зделаем морфологисскую связь для разделению по типу команда или участник
+
+            $table->primary(['match_id', 'team_id']);
 
             $table->foreign('match_id')->references('id')->on('matches')->onDelete('cascade');
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
+
         });
     }
 
@@ -31,6 +32,6 @@ class CreateOpponentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('matche_opponents');
+        Schema::dropIfExists('opponents');
     }
 }
